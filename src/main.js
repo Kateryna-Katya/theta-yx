@@ -1,143 +1,229 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- 1. SETUP ICONS & SCROLL ---
-  lucide.createIcons();
+    /* ================================================================
+       1. ИНИЦИАЛИЗАЦИЯ БИБЛИОТЕК (С ЗАЩИТОЙ ОТ ОШИБОК)
+       ================================================================ */
+    
+    // --- ICONS ---
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 
-  const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smooth: true,
-  });
+    // --- SMOOTH SCROLL (LENIS) ---
+    let lenis;
+    if (typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true,
+        });
 
-  function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+    } else {
+        console.warn('Lenis не загружен. Используется стандартный скролл.');
+        document.documentElement.style.scrollBehavior = 'smooth';
+    }
 
-  // Register GSAP ScrollTrigger
-  gsap.registerPlugin(ScrollTrigger);
+    // --- GSAP SETUP ---
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+    }
 
+    /* ================================================================
+       2. МОБИЛЬНОЕ МЕНЮ
+       ================================================================ */
+    const burger = document.querySelector('.header__burger');
+    const nav = document.querySelector('.header__nav');
+    const links = document.querySelectorAll('.header__link, .header__actions .btn');
 
-  // --- 2. MOBILE MENU LOGIC ---
-  const burger = document.querySelector('.header__burger');
-  const nav = document.querySelector('.header__nav');
-  const links = document.querySelectorAll('.header__link');
+    function toggleMenu() {
+        if (!nav) return;
+        const isActive = nav.classList.toggle('is-active');
+        
+        // Блокируем скролл страницы, когда меню открыто
+        document.body.style.overflow = isActive ? 'hidden' : '';
+    }
 
-  function toggleMenu() {
-      nav.classList.toggle('is-active');
-      document.body.style.overflow = nav.classList.contains('is-active') ? 'hidden' : '';
-  }
+    if (burger) {
+        burger.addEventListener('click', toggleMenu);
+    }
 
-  burger.addEventListener('click', toggleMenu);
+    // Закрываем меню при клике на любую ссылку
+    links.forEach(link => {
+        link.addEventListener('click', () => {
+            if (nav && nav.classList.contains('is-active')) {
+                toggleMenu();
+            }
+        });
+    });
 
-  // Закрываем меню при клике на ссылку
-  links.forEach(link => {
-      link.addEventListener('click', () => {
-          if(nav.classList.contains('is-active')) {
-              toggleMenu();
-          }
-      });
-  });
+    /* ================================================================
+       3. FAQ АККОРДЕОН
+       ================================================================ */
+    const faqItems = document.querySelectorAll('.faq__item');
 
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq__question');
+        const answer = item.querySelector('.faq__answer');
 
-  // --- 3. ANIMATIONS (GSAP) ---
+        if (question && answer) {
+            question.addEventListener('click', () => {
+                // Если хотим, чтобы открывался только один за раз — раскомментируй строки ниже:
+                /*
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.faq__answer').style.maxHeight = null;
+                    }
+                });
+                */
 
-  // Hero Text Reveal
-  const heroTl = gsap.timeline();
-  heroTl.from('.hero__label', { y: 20, opacity: 0, duration: 0.8, delay: 0.2 })
-        .from('.hero__title', { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.4")
-        .to('.hero__subtitle', { opacity: 1, duration: 1 }, "-=0.6")
-        .from('.hero__actions', { scale: 0.9, opacity: 0, duration: 0.5 }, "-=0.4");
+                const isActive = item.classList.toggle('active');
 
-  // Scroll Animations for Sections
-  const sections = document.querySelectorAll('section:not(.hero)');
-  sections.forEach(section => {
-      gsap.from(section.children, {
-          scrollTrigger: {
-              trigger: section,
-              start: "top 80%",
-              toggleActions: "play none none reverse"
-          },
-          y: 50,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.1
-      });
-  });
+                if (isActive) {
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                } else {
+                    answer.style.maxHeight = null;
+                }
+            });
+        }
+    });
 
+    /* ================================================================
+       4. ФОРМА КОНТАКТОВ (ВАЛИДАЦИЯ + КАПЧА)
+       ================================================================ */
+    const form = document.getElementById('leadForm');
+    
+    if (form) {
+        const phoneInput = document.getElementById('phoneInput');
+        const captchaQ = document.getElementById('captchaQuestion');
+        const captchaInput = document.getElementById('captchaInput');
+        const msgBox = document.getElementById('formMessage');
 
-  // --- 4. FORM LOGIC ---
+        // Валидация телефона (удаляем буквы)
+        if (phoneInput) {
+            phoneInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9+\s-]/g, '');
+            });
+        }
 
-  const form = document.getElementById('leadForm');
-  const phoneInput = document.getElementById('phoneInput');
-  const captchaQ = document.getElementById('captchaQuestion');
-  const captchaInput = document.getElementById('captchaInput');
-  const msgBox = document.getElementById('formMessage');
+        // Генерация математической капчи
+        let num1 = Math.floor(Math.random() * 10);
+        let num2 = Math.floor(Math.random() * 10);
+        if (captchaQ) captchaQ.textContent = `${num1} + ${num2} = ?`;
 
-  // Phone Validation (Only digits allowed visually)
-  phoneInput.addEventListener('input', (e) => {
-      e.target.value = e.target.value.replace(/[^0-9+\s-]/g, '');
-  });
+        // Обработка отправки
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (!msgBox || !captchaInput) return;
 
-  // Math Captcha Generation
-  let num1 = Math.floor(Math.random() * 10);
-  let num2 = Math.floor(Math.random() * 10);
-  captchaQ.textContent = `${num1} + ${num2} = ?`;
+            msgBox.style.display = 'none';
+            msgBox.className = 'form-message';
 
-  // Form Submit
-  form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      msgBox.style.display = 'none';
-      msgBox.className = 'form-message';
+            // 1. Проверка капчи
+            if (parseInt(captchaInput.value) !== (num1 + num2)) {
+                msgBox.textContent = "Ошибка: Неверный ответ на пример.";
+                msgBox.classList.add('error');
+                msgBox.style.display = 'block';
+                return;
+            }
 
-      // 1. Check Captcha
-      if(parseInt(captchaInput.value) !== (num1 + num2)) {
-          msgBox.textContent = "Ошибка: Неверный ответ на пример.";
-          msgBox.classList.add('error');
-          msgBox.style.display = 'block';
-          return;
-      }
+            // 2. Имитация AJAX отправки
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            
+            btn.textContent = "Отправка...";
+            btn.disabled = true;
 
-      // 2. Simulate AJAX
-      const btn = form.querySelector('button');
-      const originalText = btn.textContent;
-      btn.textContent = "Отправка...";
-      btn.disabled = true;
+            setTimeout(() => {
+                // Успех
+                btn.textContent = originalText;
+                btn.disabled = false;
+                form.reset();
+                
+                // Генерируем новый пример
+                num1 = Math.floor(Math.random() * 10);
+                num2 = Math.floor(Math.random() * 10);
+                if (captchaQ) captchaQ.textContent = `${num1} + ${num2} = ?`;
 
-      setTimeout(() => {
-          // Success
-          btn.textContent = originalText;
-          btn.disabled = false;
-          form.reset();
+                msgBox.textContent = "Спасибо! Данные успешно отправлены. Мы свяжемся с вами.";
+                msgBox.classList.add('success');
+                msgBox.style.display = 'block';
+                
+                // Сохраняем флаг отправки
+                localStorage.setItem('lead_sent', 'true');
+            }, 1500);
+        });
+    }
 
-          // Re-generate captcha
-          num1 = Math.floor(Math.random() * 10);
-          num2 = Math.floor(Math.random() * 10);
-          captchaQ.textContent = `${num1} + ${num2} = ?`;
+    /* ================================================================
+       5. АНИМАЦИИ (GSAP)
+       ================================================================ */
+    if (typeof gsap !== 'undefined') {
+        
+        // Hero Анимация (Timeline)
+        const heroTl = gsap.timeline();
+        
+        // Проверяем наличие элементов перед анимацией
+        if (document.querySelector('.hero__title')) {
+            heroTl.from('.hero__label', { y: 20, opacity: 0, duration: 0.8, delay: 0.2 })
+                  .from('.hero__title', { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.4")
+                  .to('.hero__subtitle', { opacity: 1, duration: 1 }, "-=0.6")
+                  .from('.hero__actions', { scale: 0.9, opacity: 0, duration: 0.5 }, "-=0.4");
+        }
 
-          msgBox.textContent = "Спасибо! Данные успешно отправлены. Мы свяжемся с вами.";
-          msgBox.classList.add('success');
-          msgBox.style.display = 'block';
+        // ScrollTrigger для всех секций
+        const sections = document.querySelectorAll('section:not(.hero)');
+        sections.forEach(section => {
+            gsap.from(section.children, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%", // Начинать анимацию, когда верх секции достигает 80% экрана
+                    toggleActions: "play none none reverse"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1 // Задержка между появлением дочерних элементов
+            });
+        });
+    }
 
-          // Save to localStorage (simulate cookie/tracker)
-          localStorage.setItem('lead_sent', 'true');
-      }, 1500);
-  });
+    /* ================================================================
+       6. COOKIE POPUP
+       ================================================================ */
+    if (!localStorage.getItem('cookiesAccepted')) {
+        const cookieDiv = document.createElement('div');
+        cookieDiv.style.cssText = `
+            position: fixed; bottom: 20px; right: 20px; 
+            background: #141A29; border: 1px solid rgba(255,255,255,0.1); 
+            padding: 20px; max-width: 300px; z-index: 999; 
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 10px;
+        `;
+        
+        cookieDiv.innerHTML = `
+            <p style="font-size: 13px; color: #94A3B8; margin: 0;">Этот сайт использует cookies для улучшения работы.</p>
+            <button id="acceptCookies" style="
+                background: #6366F1; color: white; border: none; 
+                padding: 8px 16px; border-radius: 6px; cursor: pointer; 
+                font-size: 12px; align-self: flex-start; font-weight: 600;
+            ">Принять</button>
+        `;
+        document.body.appendChild(cookieDiv);
 
-  // --- 5. COOKIE POPUP (Simple implementation) ---
-  if (!localStorage.getItem('cookiesAccepted')) {
-      const cookieDiv = document.createElement('div');
-      cookieDiv.style.cssText = "position: fixed; bottom: 20px; right: 20px; background: #141A29; border: 1px solid rgba(255,255,255,0.1); padding: 20px; max-width: 300px; z-index: 999; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);";
-      cookieDiv.innerHTML = `
-          <p style="font-size: 13px; color: #94A3B8; margin-bottom: 12px;">Этот сайт использует cookies для улучшения работы.</p>
-          <button id="acceptCookies" style="background: #6366F1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;">Принять</button>
-      `;
-      document.body.appendChild(cookieDiv);
-
-      document.getElementById('acceptCookies').addEventListener('click', () => {
-          localStorage.setItem('cookiesAccepted', 'true');
-          cookieDiv.remove();
-      });
-  }
+        const acceptBtn = document.getElementById('acceptCookies');
+        if (acceptBtn) {
+            acceptBtn.addEventListener('click', () => {
+                localStorage.setItem('cookiesAccepted', 'true');
+                cookieDiv.style.opacity = '0';
+                setTimeout(() => cookieDiv.remove(), 300);
+            });
+        }
+    }
 });
