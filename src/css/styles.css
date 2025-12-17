@@ -916,3 +916,82 @@ section {
   height: 100%;
   border-radius: 20px;
 }
+/* --- LEGAL PAGES STYLES --- */
+.pages {
+  padding-top: calc(var(--header-height) + 60px);
+  /* Отступ от хедера */
+  padding-bottom: 80px;
+  background: var(--bg-body);
+  min-height: 100vh;
+}
+
+.pages__content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pages h1 {
+  font-family: var(--font-head);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pages h2 {
+  font-family: var(--font-head);
+  font-size: 24px;
+  color: var(--primary);
+  /* Индиго */
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.pages p {
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.pages ul {
+  list-style: none;
+  margin-bottom: 24px;
+  padding-left: 20px;
+}
+
+.pages li {
+  position: relative;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 12px;
+  padding-left: 20px;
+}
+
+.pages li::before {
+  content: "•";
+  color: var(--primary);
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.pages strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.pages a {
+  color: var(--primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: var(--transition);
+}
+
+.pages a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
