@@ -1,0 +1,144 @@
+<section id="hero" class="hero">
+  <div class="container">
+      <div class="hero__content">
+          <span class="hero__label">Инновационная платформа</span>
+          <h1 class="hero__title">
+              Постройте карьеру,<br>
+              которая работает на вас
+          </h1>
+          <p class="hero__subtitle">
+              Технология нового поколения для IT-образования.
+              Воплотите мечты в реальность уже сегодня.
+          </p>
+          <div class="hero__actions">
+              <a href="#contact" class="btn btn--primary">Пройти опрос</a>
+          </div>
+      </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+      <h2 class="section-title">Почему <span>Theta-YX</span>?</h2>
+      <p class="section-desc">Решения, которые меняют правила игры в обучении.</p>
+
+      <div class="grid-3">
+          <div class="card">
+              <div class="card__icon"><i data-lucide="zap"></i></div>
+              <h3 class="card__title">Быстрый старт</h3>
+              <p class="card__text">Подключение занимает 2 минуты. Удобная адаптация без сложностей даже для новичков.</p>
+          </div>
+          <div class="card">
+              <div class="card__icon"><i data-lucide="trending-up"></i></div>
+              <h3 class="card__title">Стратегия роста</h3>
+              <p class="card__text">Практики, применимые уже сегодня. Переосмыслите подход к развитию своих навыков.</p>
+          </div>
+          <div class="card">
+              <div class="card__icon"><i data-lucide="shield-check"></i></div>
+              <h3 class="card__title">Надежность</h3>
+              <p class="card__text">Проверенный партнер. Экспертная поддержка на всех этапах вашего обучения.</p>
+          </div>
+      </div>
+  </div>
+</section>
+
+<section id="innovations" class="innovations">
+  <div class="container">
+      <div class="innovations__grid">
+          <div class="innovations__text">
+              <h2 class="section-title">Передовая цифровая инфраструктура</h2>
+              <p class="section-desc">
+                  Мы используем методологии, доказавшие эффективность.
+                  Это AI-инструменты для реальных задач.
+              </p>
+              <div class="tech-list">
+                  <div class="tech-item">
+                      <i data-lucide="cpu" color="#6366F1"></i>
+                      <div>
+                          <h4>Deep Tech Core</h4>
+                          <p>Анализ ваших навыков в реальном времени</p>
+                      </div>
+                  </div>
+                  <div class="tech-item">
+                      <i data-lucide="globe" color="#6366F1"></i>
+                      <div>
+                          <h4>Global Access</h4>
+                          <p>Платформа уже доступна в Европе и Англии</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="innovations__visual" style="height: 400px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;">
+              <img src="img/placeholder.png" alt="Innovation Visualization" style="opacity: 0.5;">
+          </div>
+      </div>
+  </div>
+</section>
+
+<section id="mentors">
+  <div class="container">
+      <h2 class="section-title">Экспертная поддержка</h2>
+      <div class="mentors__grid">
+          <div class="mentor-card">
+              <div class="mentor-card__avatar">
+                  <img src="img/placeholder.png" alt="Mentor">
+              </div>
+              <div>
+                  <h3>Алекс Рейн</h3>
+                  <p style="color:var(--text-muted); font-size:14px;">Senior DevOps, London</p>
+              </div>
+          </div>
+          <div class="mentor-card">
+              <div class="mentor-card__avatar">
+                  <img src="img/placeholder.png" alt="Mentor">
+              </div>
+              <div>
+                  <h3>Сара Дженкинс</h3>
+                  <p style="color:var(--text-muted); font-size:14px;">AI Researcher, Cambridge</p>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="container">
+      <div class="form-box">
+          <h2 class="section-title" style="text-align: center;">Начать сейчас</h2>
+          <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">
+              Заполните форму для бесплатной консультации.<br>Предложение активно только в странах ЕС.
+          </p>
+
+          <form id="leadForm">
+              <div class="form-group">
+                  <label class="form-label">Ваше имя</label>
+                  <input type="text" class="form-input" name="name" placeholder="Иван Петров" required>
+              </div>
+
+              <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-input" name="email" placeholder="hello@example.com" required>
+              </div>
+
+              <div class="form-group">
+                  <label class="form-label">Телефон</label>
+                  <input type="tel" class="form-input" id="phoneInput" name="phone" placeholder="+44 7911 123456" required>
+              </div>
+
+              <div class="form-group form-captcha">
+                  <span id="captchaQuestion" class="captcha-question">2 + 3 = ?</span>
+                  <input type="number" class="form-input" id="captchaInput" style="width: 100px;" required>
+              </div>
+
+              <div class="form-group checkbox-wrapper">
+                  <input type="checkbox" id="privacy" required>
+                  <label for="privacy">Я согласен с <a href="./privacy.html" style="text-decoration: underline;">Политикой конфиденциальности</a> и обработкой данных.</label>
+              </div>
+
+              <button type="submit" class="btn btn--primary" style="width: 100%;">Запросить доступ</button>
+
+              <div id="formMessage" class="form-message"></div>
+          </form>
+      </div>
+  </div>
+</section>
